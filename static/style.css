@@ -1,0 +1,181 @@
+body {
+    font-family: sans-serif;
+    text-align: center;
+    /* Old background: background: #f0f0f0; */
+    /* New gradient background */
+    background: linear-gradient(135deg, #74ebd5 0%, #ACB6E5 100%);
+    margin: 0;
+    padding: 20px;
+    color: #222;
+}
+
+
+#word {
+    font-size: 2rem;
+    margin: 20px;
+    letter-spacing: 10px;
+}
+
+#letters button {
+    margin: 4px;
+    padding: 10px 14px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+#message {
+    font-size: 1.2rem;
+    margin-top: 20px;
+}
+
+#hangman {
+    position: relative;
+    width: 200px;
+    height: 250px;
+    margin: 20px auto;
+}
+
+.part {
+    opacity: 0;
+    transform: scale(0.8);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    position: absolute;
+    background-color: black;
+}
+
+.part.visible {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.base {
+    width: 120px;
+    height: 10px;
+    bottom: 0;
+    left: 40px;
+}
+
+.pole {
+    width: 10px;
+    height: 200px;
+    bottom: 0;
+    left: 40px;
+}
+
+.beam {
+    width: 100px;
+    height: 10px;
+    top: 0;
+    left: 40px;
+}
+
+.rope {
+    width: 2px;
+    height: 30px;
+    top: 10px;
+    left: 130px;
+}
+
+.head {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 4px solid black;
+    top: 40px;
+    left: 115px;
+    background: none;
+}
+
+.body {
+    width: 4px;
+    height: 50px;
+    top: 70px;
+    left: 130px;
+}
+
+.left-arm {
+    width: 40px;
+    height: 4px;
+    top: 90px;
+    left: 90px;
+    transform: rotate(-45deg);
+}
+
+.right-arm {
+    width: 40px;
+    height: 4px;
+    top: 90px;
+    left: 130px;
+    transform: rotate(45deg);
+}
+
+.left-leg {
+    width: 40px;
+    height: 4px;
+    top: 120px;
+    left: 90px;
+    transform: rotate(45deg);
+}
+
+.right-leg {
+    width: 40px;
+    height: 4px;
+    top: 120px;
+    left: 130px;
+    transform: rotate(-45deg);
+}
+
+/* Shake animation */
+@keyframes shake {
+    0% {
+        transform: translateX(0);
+    }
+
+    20% {
+        transform: translateX(-8px);
+    }
+
+    40% {
+        transform: translateX(8px);
+    }
+
+    60% {
+        transform: translateX(-8px);
+    }
+
+    80% {
+        transform: translateX(8px);
+    }
+
+    100% {
+        transform: translateX(0);
+    }
+}
+
+.shake {
+    animation: shake 0.5s;
+}
+
+/* Blood drop animation */
+#blood-drop {
+    position: absolute;
+    top: 70px;
+    /* below head */
+    left: 130px;
+    font-size: 2rem;
+    opacity: 0;
+    pointer-events: none;
+    animation-fill-mode: forwards;
+}
+
+@keyframes drop {
+    0% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+}

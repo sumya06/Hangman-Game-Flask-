@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Hangman - Flask</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+
+<body>
+  <h1>Hangman Game (Flask)</h1>
+
+  <!-- Hangman Drawing -->
+  <div id="hangman" style="position: relative;">
+    <div class="part base"></div>
+    <div class="part pole"></div>
+    <div class="part beam"></div>
+    <div class="part rope"></div>
+    <div class="part head"></div>
+    <div class="part body"></div>
+    <div class="part left-arm"></div>
+    <div class="part right-arm"></div>
+    <div class="part left-leg"></div>
+    <div class="part right-leg"></div>
+
+    <!-- Blood drop -->
+    <div id="blood-drop">💧</div>
+  </div>
+
+  <!-- Word Display -->
+  <div id="word">_ _ _ _ _</div>
+
+  <!-- Letter Buttons -->
+  <div id="letters"></div>
+
+  <!-- Message Area -->
+  <div id="message"></div>
+  <!-- Replay Button Container -->
+  <div id="replay-container" style="margin-top: 20px;"></div>
+
+  <!-- Sounds -->
+  <audio id="fail-sound" src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg"
+    preload="auto"></audio>
+  <audio id="gameover-sound" src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg" preload="auto"></audio>
+
+  <script>
+    const letters = "abcdefghijklmnopqrstuvwxyz";
+    const wordEl = document.getElementById("word");
+    const messageEl = document.getElementById("message");
+    const lettersEl = document.getElementById("letters");
+    const parts = document.querySelectorAll(".part");
+    const bloodDrop = document.getElementById("blood-drop");
+    const replayContainer = document.getElementById("replay-container");
+
+    const failSound = document.getElementById("fail-sound");
+    const gameOverSound = document.getElementById("gameover-sound");
+
+    bloodDrop.style.opacity = 0;
+
+    // Create alphabet buttons
+    for (let l of letters) {
+      const btn = document.createElement("button");
+      btn.textContent = l;
+      btn.onclick = () => makeGuess(l, btn);
+      lettersEl.appendChild(btn);
+    }
+
+    let previousPartsShown = 0;
+
+    async function makeGuess(letter, btn) {
+      btn.disabled = true;
+
+      const res = await fetch("/guess", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ letter }),
+      });
+
+      const data = await res.json();
+
+      wordEl.textContent = data.display;
+
+      const partsToShow = 10 - data.lives;
+
+      parts.forEach((part, index) => {
+        if (index < partsToShow) {
+          part.classList.add("visible");
+        } else {
+          part.classList.remove("visible");
+        }
+      });
+
+      // Shake and fail sound on new part
+      if (partsToShow > previousPartsShown && !data.won && !data.lost) {
+        failSound.play();
+        wordEl.classList.add("shake");
+        setTimeout(() => {
+          wordEl.classList.remove("shake");
+        }, 500);
+      }
+      previousPartsShown = partsToShow;
+
+      if (data.won) {
+        messageEl.textContent = "🎉 You won!";
+        disableAll();
+        showReplayButton();
+      } else if (data.lost) {
+        messageEl.textContent = `💀 Game over! Word was "${data.word}"`;
+        disableAll();
+
+        // Play game over sound
+        gameOverSound.play();
+
+        // Blood drop animation
+        bloodDrop.style.opacity = 1;
+        bloodDrop.style.animation = "drop 1s forwards";
+
+        setTimeout(() => {
+          bloodDrop.style.opacity = 0;
+          bloodDrop.style.animation = "";
+        }, 1000);
+
+        showReplayButton();
+      }
+    }
+
+    function disableAll() {
+      document.querySelectorAll("#letters button").forEach((btn) => (btn.disabled = true));
+    }
+
+    function showReplayButton() {
+      replayContainer.innerHTML = ""; // clear previous
+      const btn = document.createElement("button");
+      btn.textContent = "Replay";
+      btn.style.padding = "10px 20px";
+      btn.style.fontSize = "1rem";
+      btn.style.cursor = "pointer";
+      btn.onclick = () => {
+        window.location.reload(); // simple reload to reset game
+      };
+      replayContainer.appendChild(btn);
+    }
+  </script>
+</body>
+
+</html>

@@ -1,4 +1,4 @@
-# Hangman-Game-Flask-
+# Hangman-Game-Flask
 
 📁 Project Structure
 hangman-flask/
